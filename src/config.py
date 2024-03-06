@@ -37,7 +37,7 @@ class Config:
         handler = logging.handlers.RotatingFileHandler(os.path.join(logs_path, f'{current_date}.log'), mode='a',
                                                        maxBytes=5_000_000, backupCount=1000)
         logger_handlers = [handler, logging.StreamHandler()]
-        logging.basicConfig(format='%(asctime)s - %(name)21s %(levelname)-7s %(threadName)12s: %(message)s',
+        logging.basicConfig(format='%(asctime)s - %(name)25s %(levelname)-10s %(threadName)20s: %(message)s',
                             handlers=logger_handlers, level=logging.getLevelName(self.logging_level))
         logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
