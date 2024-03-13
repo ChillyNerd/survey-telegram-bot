@@ -1,11 +1,15 @@
-import telebot
-import pandas as pd
 import io
+import json
 import logging
+import os
 from threading import Lock
-from telebot.types import Message, CallbackQuery, InputFile
-from src.answer import Answer
 from typing import List
+
+import pandas as pd
+import telebot
+from telebot.types import Message, CallbackQuery, InputFile
+
+from src.answer import Answer
 
 
 class Bot:
@@ -14,6 +18,14 @@ class Bot:
         self.questions: List[str] = questions
         self.privileged_users: List[str] = privileged_users
         self.__all_answers: List[Answer] = []
+        self.data_path = os.path.join(os.getcwd(), "data.json")
+        if os.path.exists(self.data_path):
+            with open(self.data_path, 'r') as file:
+                answers = json.load(file)
+            if len(answers) != 0 and len(answers[0]['answers']) == len(self.questions):
+                self.__all_answers = list(map(lambda answer: Answer(answer['username'], *answer['answers']), answers))
+            else:
+                os.remove(self.data_path)
         self.__log = logging.getLogger("SurveyBot")
         self.__lock = Lock()
         self.__init_callbacks()
@@ -47,6 +59,8 @@ class Bot:
         def end_question_handler(message: Message, *args):
             with self.__lock:
                 self.__all_answers.append(Answer(message.from_user.username, *[*args, message.text]))
+                with open(self.data_path, "w") as file:
+                    json.dump(list(map(Answer.to_json, self.__all_answers)), file)
                 self.__log.info(f"Saved {message.from_user.username} answer")
             self.__bot.send_message(message.chat.id, f"Принято, спасибо за честность!")
 

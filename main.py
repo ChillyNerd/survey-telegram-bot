@@ -1,8 +1,8 @@
+import logging
+import os
+
 from src.bot import Bot
 from src.config import Config
-import os
-import logging
-
 
 QUESTIONS = ['First question', 'Second question', 'Third question']
 PRIVILEGED_USERS = None
