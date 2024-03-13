@@ -1,8 +1,10 @@
+from typing import List
+
+
 class Answer:
-    def __init__(self, username: str, first_answer: str, second_answer: str):
+    def __init__(self, username: str, *args):
         self.username = username
-        self.first_answer = first_answer
-        self.second_answer = second_answer
+        self.answers: List[str] = list(args)
 
     def to_dict(self):
-        return {"username": self.username, "first_answer": self.first_answer, "second_answer": self.second_answer}
+        return {"username": self.username, **{str(index+1): answer for index, answer in enumerate(self.answers)}}
